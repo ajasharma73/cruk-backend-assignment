@@ -1,3 +1,5 @@
+CREATE DATABASE CRUK;
+
 CREATE TABLE CRUK.users (
 	id INT auto_increment NOT NULL,
 	email varchar(100) NOT NULL,
