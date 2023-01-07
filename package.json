@@ -13,13 +13,14 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.97.0",
     "@types/jest": "^26.0.10",
+    "@types/mysql": "^2.15.21",
     "@types/node": "10.17.27",
     "aws-cdk": "1.97.0",
     "jest": "^26.4.2",
+    "mysql": "^2.18.1",
     "ts-jest": "^26.2.0",
     "ts-node": "^9.0.0",
-    "typescript": "~3.9.7",
-    "mysql": "^2.18.1"
+    "typescript": "~3.9.7"
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "^1.187.0",
@@ -30,8 +31,9 @@
     "@aws-cdk/aws-s3": "^1.187.0",
     "@aws-cdk/aws-secretsmanager": "^1.187.0",
     "@aws-cdk/aws-ssm": "^1.187.0",
-    "@aws-cdk/core": "^1.97.0",
+    "@aws-cdk/core": "^1.187.0",
     "@aws-cdk/custom-resources": "^1.187.0",
+    "aws-sdk": "^2.1290.0",
     "source-map-support": "^0.5.16"
   }
 }

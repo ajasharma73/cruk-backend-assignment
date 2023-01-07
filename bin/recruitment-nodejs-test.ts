@@ -3,7 +3,8 @@ import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 import { RecruitmentNodejsTestStack } from '../lib/recruitment-nodejs-test-stack';
 
-const app = new cdk.App();
+const app = new cdk.App()
+
 new RecruitmentNodejsTestStack(app, 'RecruitmentNodejsTestStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
