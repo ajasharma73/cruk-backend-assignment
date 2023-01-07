@@ -1,5 +1,5 @@
-import * as WinstonCloudWatch from 'winston-cloudwatch';
-import * as winston from 'winston';
+import WinstonCloudWatch from 'winston-cloudwatch';
+import winston from 'winston';
 var NODE_ENV = process.env.NODE_ENV || 'development';
 
 import { format } from 'util';
