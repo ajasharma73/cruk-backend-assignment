@@ -21,6 +21,7 @@ export class CdkResourceInitializer extends Construct {
   public readonly response: string
   public readonly customResource: AwsCustomResource
   public readonly function: lambda.Function
+  public readonly donationFunction: lambda.Function
 
   constructor (scope: Construct, id: string, props: CdkResourceInitializerProps) {
     super(scope, id)
@@ -49,7 +50,7 @@ export class CdkResourceInitializer extends Construct {
       params: {
         config: props.config
       }
-    })
+    });
 
     const payloadHashPrefix = createHash('md5').update(payload).digest('hex').substring(0, 6)
 
@@ -82,5 +83,13 @@ export class CdkResourceInitializer extends Construct {
     this.response = this.customResource.getResponseField('Payload')
 
     this.function = fn
+
+    const handler = new lambda.Function(this, "Handler", {
+      runtime: lambda.Runtime.NODEJS_16_X, // So we can use async in my_lambda.js
+      code: lambda.Code.fromAsset("resources"), // Note 'resources' is the folder we created
+      handler: "lambda.main", //Note lambda is our filename, and main is our function
+    });
+
+    this.donationFunction = handler;
   }
 }
