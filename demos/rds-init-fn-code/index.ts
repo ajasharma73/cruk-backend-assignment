@@ -1,15 +1,7 @@
 import * as mysql from "mysql";
-import * as AWS from 'aws-sdk';
 import * as fs from "fs";
 import * as path from "path";
-
-const secrets = new AWS.SecretsManager({})
-
-type GetSecretValueRet = {
-  username: string;
-  password: string;
-  host: string;
-}
+import { getSecretValue, GetSecretValueRet } from "../../resources/utils/secretValue";
 
 exports.handler = async (e) => {
   try {
@@ -46,16 +38,6 @@ function query (connection: mysql.Connection, sql:string) {
       if (error) return reject(error)
 
       return resolve(res)
-    })
-  })
-}
-
-function getSecretValue(secretId:string):Promise<GetSecretValueRet | Error> {
-  return new Promise((resolve, reject) => {
-    secrets.getSecretValue({ SecretId: secretId }, (err, data) => {
-      if (err) return reject(err)
-
-      return resolve(JSON.parse(data.SecretString as string) as GetSecretValueRet)
     })
   })
 }
