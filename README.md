@@ -71,3 +71,7 @@ Do it manually, it's a one-time thing
 
 Absolutely! show us your AWS chops
 
+
+References Used:
+https://github.com/CRUKorg/cruk-backend-assignment  
+https://aws.amazon.com/blogs/infrastructure-and-automation/use-aws-cdk-to-initialize-amazon-rds-instances/
