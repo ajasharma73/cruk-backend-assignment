@@ -1,6 +1,6 @@
 CREATE DATABASE CRUK;
 
-CREATE TABLE CRUK.users (
+CREATE TABLE IF NOT EXISTS CRUK.users (
 	id INT auto_increment NOT NULL,
 	email varchar(100) NOT NULL,
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -12,7 +12,7 @@ ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE CRUK.donation (
+CREATE TABLE IF NOT EXISTS CRUK.donation (
 	id INT auto_increment NOT NULL,
 	donation_amount BIGINT UNSIGNED DEFAULT 0 NOT NULL,
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -24,7 +24,7 @@ ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE CRUK.user_donation_map (
+CREATE TABLE IF NOT EXISTS CRUK.user_donation_map (
 	user_id INT NOT NULL,
 	donation_id INT NOT NULL,
 	CONSTRAINT user_donation_map_FK FOREIGN KEY (user_id) REFERENCES CRUK.users(id),

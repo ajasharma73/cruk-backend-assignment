@@ -1,9 +1,9 @@
 import knex, { Knex } from "knex";
+import { DATABASE_SECRET_NAME } from "../../lib/env";
 import { MySqlConnectionConfig } from "../types/database.types";
 import { getSecretValue, GetSecretValueRet } from "../utils/secretValue";
 
 const DATABASE_NAME = process.env.DATABASE_NAME ?? "CRUK";
-const CREDS_SECRET_NAME = process.env.CREDS_SECRET_NAME ?? "aws_cred";
 class DBService {
     private static _db: Knex;
     public static getConnection(){
@@ -11,7 +11,7 @@ class DBService {
     }
 
     static async initialiseDb(){
-        const { password, username, host } = (await getSecretValue(CREDS_SECRET_NAME)) as GetSecretValueRet;
+        const { password, username, host } = (await getSecretValue(DATABASE_SECRET_NAME)) as GetSecretValueRet;
         const connectionConfig: MySqlConnectionConfig = {
             user: username,
             host,

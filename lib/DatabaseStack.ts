@@ -90,7 +90,7 @@ export class DatabaseStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    masterUserSecret.attach(dbInstance);
+    // masterUserSecret.attach(dbInstance);
 
     const initializer = new CdkResourceInitializer(this, "MyRdsInit", {
       config: {
@@ -102,7 +102,7 @@ export class DatabaseStack extends Stack {
       fnSecurityGroups: [],
       vpc,
       subnetsSelection: vpc.selectSubnets({
-        subnetType: SubnetType.PRIVATE_WITH_NAT,
+        subnetType: SubnetType.PRIVATE_ISOLATED,
       }),
     });
 
