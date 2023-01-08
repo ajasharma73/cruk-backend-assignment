@@ -3,7 +3,15 @@ import * as fs from "fs";
 import * as path from "path";
 import { getSecretValue, GetSecretValueRet } from "../../resources/utils/secretValue";
 
-exports.handler = async (e) => {
+type HandlerParams = {
+  params:{
+    config:{
+      credsSecretName:string
+    }
+  }
+}
+
+exports.handler = async (e:HandlerParams) => {
   try {
     const { config } = e.params
     const { password, username, host } = (await getSecretValue(config.credsSecretName)) as GetSecretValueRet
