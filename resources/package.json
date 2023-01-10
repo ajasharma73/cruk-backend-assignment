@@ -2,27 +2,17 @@
     "name": "lambda",
     "version": "0.1.0",
     "scripts": {
-      "start": "node index.js"
+        "start": "node index.js"
     },
     "devDependencies": {
-      "@aws-cdk/assert": "1.97.0",
-      "@types/aws-lambda": "^8.10.109",
-      "@types/jest": "^26.0.10",
-      "@types/mysql": "^2.15.21",
-      "@types/node": "10.17.27",
-      "jest": "^26.4.2",
-      "mysql": "^2.18.1",
-      "ts-jest": "^26.2.0",
-      "typescript": "~4.6.2"
+        "@types/jest": "^26.0.10",
+        "@types/node": "10.17.27",
+        "jest": "^26.4.2",
+        "ts-jest": "^26.2.0",
+        "typescript": "~4.6.2"
     },
     "dependencies": {
-      "aws-cdk": "^2.59.0",
-      "aws-cdk-lib": "^2.59.0",
-      "aws-lambda": "^1.0.7",
-      "knex": "^2.4.0",
-      "source-map-support": "^0.5.16",
-      "winston": "^3.8.2",
-      "winston-cloudwatch": "^6.1.1"
+        "knex": "^2.4.0",
+        "mysql2": "^2.3.3"
     }
-  }
-  
+}
