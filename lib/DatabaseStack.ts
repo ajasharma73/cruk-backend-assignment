@@ -54,12 +54,7 @@ export class DatabaseStack extends Stack {
           cidrMask: 24,
           name: "ingress",
           subnetType: SubnetType.PUBLIC,
-        },
-        {
-          cidrMask: 28,
-          name: "rds",
-          subnetType: SubnetType.PRIVATE_ISOLATED,
-        },
+        }
       ],
     });
 
@@ -69,14 +64,14 @@ export class DatabaseStack extends Stack {
     });
 
     dbSecurityGroup.addIngressRule(
-      Peer.ipv4(vpc.vpcCidrBlock),
+      Peer.anyIpv4(),
       Port.tcp(port),
       `Allow port ${port} for database access from VPC CIDR block`
     );
 
     const dbInstance = new DatabaseInstance(this, "MysqlRdsInstance", {
       vpc: vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      vpcSubnets: { subnetType: SubnetType.PUBLIC },
       instanceType,
       engine,
       port,
@@ -88,8 +83,6 @@ export class DatabaseStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // masterUserSecret.attach(dbInstance);
-
     const initializer = new CdkResourceInitializer(this, "MyRdsInit", {
       config: {
         credsSecretName,
@@ -97,21 +90,15 @@ export class DatabaseStack extends Stack {
       fnLogRetention: RetentionDays.FIVE_MONTHS,
       fnCode: DockerImageCode.fromImageAsset(`${__dirname}/rds-init-fn-code`, {}),
       fnTimeout: Duration.minutes(2),
-      fnSecurityGroups: [],
-      vpc,
-      subnetsSelection: vpc.selectSubnets({
-        subnetType: SubnetType.PRIVATE_ISOLATED,
-      }),
+      fnSecurityGroups: []
     });
 
     // manage resources dependency
     initializer.customResource.node.addDependency(dbInstance);
 
-    // allow the initializer function to connect to the RDS instance
-    dbInstance.connections.allowFrom(initializer.function, Port.tcp(3306));
-
-    // allow initializer function to read RDS instance creds secret
+    // allow initializer and donation function to read RDS instance creds secret
     masterUserSecret.grantRead(initializer.function);
+    masterUserSecret.grantRead(initializer.donationFunction);
 
     new CfnOutput(this, 'DonationFunctionUrl', {
       value: initializer.donationFunctionUrl.url,
