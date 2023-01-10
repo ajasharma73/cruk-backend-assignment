@@ -5,7 +5,8 @@ import { Construct } from 'constructs';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from 'aws-cdk-lib/custom-resources'
 import { RetentionDays } from 'aws-cdk-lib/aws-logs'
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam'
-import { createHash } from 'crypto'
+import { createHash } from 'crypto';
+import { DATABASE_NAME, DATABASE_SECRET_NAME } from './env';
 
 export interface CdkResourceInitializerProps {
   vpc: ec2.IVpc
@@ -23,6 +24,7 @@ export class CdkResourceInitializer extends Construct {
   public readonly customResource: AwsCustomResource
   public readonly function: lambda.Function
   public readonly donationFunction: lambda.Function
+  public readonly donationFunctionUrl: lambda.FunctionUrl
 
   constructor (scope: Construct, id: string, props: CdkResourceInitializerProps) {
     super(scope, id)
@@ -85,12 +87,26 @@ export class CdkResourceInitializer extends Construct {
 
     this.function = fn
 
-    const handler = new lambda.Function(this, "Handler", {
+    const handler = new lambda.Function(this, "DonationsFunction", {
+      functionName: `${id}-DonationsFunction${stack.stackName}`,
       runtime: lambda.Runtime.NODEJS_16_X, // So we can use async in my_lambda.js
       code: lambda.Code.fromAsset("resources"), // Note 'resources' is the folder we created
       handler: "lambda.main", //Note lambda is our filename, and main is our function
+      vpc: props.vpc,
+      vpcSubnets: props.vpc.selectSubnets(props.subnetsSelection),
+      allowAllOutbound: true,
+      timeout: props.fnTimeout,
+      logRetention: props.fnLogRetention,
+      environment: {
+        DATABASE_NAME,
+        DATABASE_SECRET_NAME
+      }
     });
 
     this.donationFunction = handler;
+
+    this.donationFunctionUrl = this.donationFunction.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
   }
 }

@@ -7,12 +7,13 @@ import {
   Port,
   SecurityGroup,
   SubnetType,
-  Vpc,
+  Vpc
 } from "aws-cdk-lib/aws-ec2";
+import { DockerImageCode } from "aws-cdk-lib/aws-lambda";
+import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import {
-  Credentials,
-  DatabaseInstanceEngine,
-  MysqlEngineVersion,
+  Credentials, DatabaseInstance, DatabaseInstanceEngine,
+  MysqlEngineVersion
 } from "aws-cdk-lib/aws-rds";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
@@ -20,12 +21,9 @@ import {
   DATABASE_NAME,
   DATABASE_SECRET_NAME,
   SECURITY_GROUP,
-  VPC_NAME,
+  VPC_NAME
 } from "./env";
-import { DatabaseInstance } from "aws-cdk-lib/aws-rds";
 import { CdkResourceInitializer } from "./resource-initialiser";
-import { RetentionDays } from "aws-cdk-lib/aws-logs";
-import { Code, DockerImageCode } from "aws-cdk-lib/aws-lambda";
 
 export class DatabaseStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -114,6 +112,10 @@ export class DatabaseStack extends Stack {
 
     // allow initializer function to read RDS instance creds secret
     masterUserSecret.grantRead(initializer.function);
+
+    new CfnOutput(this, 'DonationFunctionUrl', {
+      value: initializer.donationFunctionUrl.url,
+    });
 
     /* eslint no-new: 0 */
     new CfnOutput(this, "RdsInitFnResponse", {
