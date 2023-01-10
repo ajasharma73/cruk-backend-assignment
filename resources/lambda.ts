@@ -1,15 +1,13 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 import { SERVICE_INIT_FAILED } from './constants/errors';
-import { ERROR_PARSE_REQ_BODY } from './constants/reqerrors';
+import { ERROR_PARSE_REQ_BODY, INVALID_EMAIL } from './constants/reqerrors';
 import DBService from './database/DBService';
 import { getNumberOfDonations } from './models/donations';
-import LogService from './services/LogService';
 import isValidEmail from './utils/isValidEmail';
 
 const initServices = async () => {
-    LogService.initServices();
+    console.log("Initialising services");
     const hasDBInitialised = await DBService.initialiseDb();
-
     return hasDBInitialised;
 };
 
@@ -17,32 +15,38 @@ const parseRequestBody = (body: string) => {
     try {
         return JSON.parse(body);
     } catch (err) {
-        LogService.logError(ERROR_PARSE_REQ_BODY, err as Error);
+        console.error(ERROR_PARSE_REQ_BODY, err as Error);
         return {};
     }
 }
 
+const processError = (response:string, code?:number, err?:{message:string})=>{
+    console.error(response, err?.message);
+    return {
+        statusCode: code ?? 400,
+        body: JSON.stringify({
+            error: response
+        }),
+    };
+}
+
+
 export const main = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
     if(!await initServices()) {
-        console.log(SERVICE_INIT_FAILED);
+        return processError(SERVICE_INIT_FAILED, 500);
     }
 
     const reqBody = parseRequestBody(event.body as string);
     const userEmail = reqBody.email;
 
     if(!userEmail || !isValidEmail(userEmail)) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({
-                error: 'Invalid email address',
-            }),
-        };
+        return processError(INVALID_EMAIL, 400);
     }
 
-    const donationCount = (await getNumberOfDonations(userEmail))!.count;
+    const donationCount = (await getNumberOfDonations(userEmail))?.count;
     
     if(donationCount && donationCount >= 2){
-        //send a SNS message to the user
+        //publish to sns
     }
     return {
         statusCode: 200,
