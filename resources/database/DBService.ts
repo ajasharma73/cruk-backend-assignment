@@ -1,13 +1,17 @@
 import knex, { Knex } from "knex";
-import { DATABASE_SECRET_NAME } from "../../lib/env";
+import { DATABASE_INIT_FAILED } from "../constants/errors";
+import { DATABASE_NAME, DATABASE_SECRET_NAME } from "../env";
+import LogService from "../services/LogService";
 import { MySqlConnectionConfig } from "../types/database.types";
 import { getSecretValue, GetSecretValueRet } from "../utils/secretValue";
-
-const DATABASE_NAME = process.env.DATABASE_NAME ?? "CRUK";
 class DBService {
     private static _db: Knex;
-    public static getConnection(){
+    static getConnection(){
         return this._db;
+    }
+
+    static checkConnection(){
+        return this._db.raw("SELECT 1");
     }
 
     static async initialiseDb(){
@@ -24,6 +28,14 @@ class DBService {
             connection: connectionConfig,
             pool: { min: 0, max: 10 }
           });
+
+        try{
+            await this.checkConnection();
+            return true;
+        }catch(err){
+            LogService.logError(DATABASE_INIT_FAILED,err as Error);
+        }
+        return false;
     }
 }
 
