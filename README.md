@@ -71,11 +71,31 @@ Do it manually, it's a one-time thing
 
 Absolutely! show us your AWS chops
 
+**Online URL for testing**  
+https://ma37o7f26aefsmkfvzhl65zcje0sdlzy.lambda-url.us-east-1.on.aws/
 
-References Used:
+**Deployment Instructions**
+* Clone the repository.
+* Install the dependences for both the cdk project and the donation lambda function
+```
+npm install
+cd ./resources/donation-fn-code
+npm install
+```
+* Head back to the root directory of the project and use the AWS CDK to deploy. Ensure that [aws-cli](https://aws.amazon.com/cli/) is installed and configured against the right region.
+```
+cdk bootstrap
+cdk deploy
+```
+
+**Scalability**
+* The app uses a lambda function and AWS should automatically handle scalability.
+* As for RDS, the expectation would be to use as many read replicas as necessary since this function isn't writing back to the database.
+
+References Used:  
 https://github.com/CRUKorg/cruk-backend-assignment  
-https://aws.amazon.com/blogs/infrastructure-and-automation/use-aws-cdk-to-initialize-amazon-rds-instances/
-https://www.youtube.com/watch?v=1YrmUzOjIqE
-https://aws.amazon.com/blogs/aws/announcing-aws-lambda-function-urls-built-in-https-endpoints-for-single-function-microservices/
-https://docs.aws.amazon.com/lambda/latest/dg/typescript-handler.html
-https://docs.aws.amazon.com/cdk/api/v1/docs/aws-lambda-readme.html
+https://aws.amazon.com/blogs/infrastructure-and-automation/use-aws-cdk-to-initialize-amazon-rds-instances/  
+https://www.youtube.com/watch?v=1YrmUzOjIqE  
+https://aws.amazon.com/blogs/aws/announcing-aws-lambda-function-urls-built-in-https-endpoints-for-single-function-microservices/  
+https://docs.aws.amazon.com/lambda/latest/dg/typescript-handler.html  
+https://docs.aws.amazon.com/cdk/api/v1/docs/aws-lambda-readme.html  
