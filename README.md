@@ -72,7 +72,13 @@ Do it manually, it's a one-time thing
 Absolutely! show us your AWS chops
 
 **Online URL for testing**  
-https://ma37o7f26aefsmkfvzhl65zcje0sdlzy.lambda-url.us-east-1.on.aws/
+https://ma37o7f26aefsmkfvzhl65zcje0sdlzy.lambda-url.us-east-1.on.aws/  
+Request body is of content-type `application/json`
+```
+{
+    "email":"testuser01@gmail.com"
+}
+```
 
 **Deployment Instructions**
 * Clone the repository.
