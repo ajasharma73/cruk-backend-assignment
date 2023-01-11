@@ -17,6 +17,7 @@ import {
 } from "aws-cdk-lib/aws-rds";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
+import { DonationFunctionDeploy } from "./donation-fn-deploy";
 import {
   DATABASE_NAME,
   DATABASE_SECRET_NAME,
@@ -25,7 +26,7 @@ import {
 } from "./env";
 import { CdkResourceInitializer } from "./resource-initialiser";
 
-export class DatabaseStack extends Stack {
+export class RecruitmentStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -89,8 +90,7 @@ export class DatabaseStack extends Stack {
       },
       fnLogRetention: RetentionDays.FIVE_MONTHS,
       fnCode: DockerImageCode.fromImageAsset(`${__dirname}/rds-init-fn-code`, {}),
-      fnTimeout: Duration.minutes(2),
-      fnSecurityGroups: []
+      fnTimeout: Duration.minutes(2)
     });
 
     // manage resources dependency
@@ -98,10 +98,16 @@ export class DatabaseStack extends Stack {
 
     // allow initializer and donation function to read RDS instance creds secret
     masterUserSecret.grantRead(initializer.function);
-    masterUserSecret.grantRead(initializer.donationFunction);
+
+    // initialize the donation function here
+    const lambdaDeploy = new DonationFunctionDeploy(this, "DonationFunctionDeploy", {
+      fnLogRetention: RetentionDays.FIVE_MONTHS,
+      fnTimeout: Duration.minutes(2)
+    });
+    masterUserSecret.grantRead(lambdaDeploy.donationFunction);
 
     new CfnOutput(this, 'DonationFunctionUrl', {
-      value: initializer.donationFunctionUrl.url,
+      value: lambdaDeploy.donationFunctionUrl.url,
     });
 
     /* eslint no-new: 0 */
