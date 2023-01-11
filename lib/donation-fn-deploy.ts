@@ -9,6 +9,7 @@ export interface DonationFunctionDeployProps {
   fnTimeout: Duration
   fnLogRetention: RetentionDays
   fnMemorySize?: number
+  fnCode: lambda.Code
 }
 
 export class DonationFunctionDeploy extends Construct {
@@ -23,7 +24,7 @@ export class DonationFunctionDeploy extends Construct {
     this.donationFunction = new lambda.Function(this, "DonationsFunction", {
       functionName: `${id}-DonationsFunction${stack.stackName}`,
       runtime: lambda.Runtime.NODEJS_16_X, // So we can use async in my_lambda.js
-      code: lambda.Code.fromAsset("resources"), // Note 'resources' is the folder we created
+      code: props.fnCode, // Note 'resources' is the folder we created
       handler: "lambda.main", //Note lambda is our filename, and main is our function
       timeout: props.fnTimeout,
       logRetention: props.fnLogRetention,

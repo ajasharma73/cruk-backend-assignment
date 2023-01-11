@@ -9,7 +9,7 @@ import {
   SubnetType,
   Vpc
 } from "aws-cdk-lib/aws-ec2";
-import { DockerImageCode } from "aws-cdk-lib/aws-lambda";
+import { Code, DockerImageCode } from "aws-cdk-lib/aws-lambda";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import {
   Credentials, DatabaseInstance, DatabaseInstanceEngine,
@@ -89,7 +89,7 @@ export class RecruitmentStack extends Stack {
         credsSecretName,
       },
       fnLogRetention: RetentionDays.FIVE_MONTHS,
-      fnCode: DockerImageCode.fromImageAsset(`${__dirname}/rds-init-fn-code`, {}),
+      fnCode: DockerImageCode.fromImageAsset(`${__dirname}/../resources/rds-init-fn-code`, {}),
       fnTimeout: Duration.minutes(2)
     });
 
@@ -102,6 +102,7 @@ export class RecruitmentStack extends Stack {
     // initialize the donation function here
     const lambdaDeploy = new DonationFunctionDeploy(this, "DonationFunctionDeploy", {
       fnLogRetention: RetentionDays.FIVE_MONTHS,
+      fnCode: Code.fromAsset(`${__dirname}/../resources/donation-fn-code`),
       fnTimeout: Duration.minutes(2)
     });
     masterUserSecret.grantRead(lambdaDeploy.donationFunction);

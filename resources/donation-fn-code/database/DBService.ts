@@ -1,6 +1,6 @@
 import knex, { Knex } from "knex";
 import { DATABASE_INIT_FAILED } from "../constants/errors";
-import { DATABASE_NAME, DATABASE_SECRET_NAME } from "../env";
+import { DATABASE_NAME, DATABASE_SECRET_NAME } from "../../env";
 import { MySqlConnectionConfig } from "../types/database.types";
 import { getSecretValue, GetSecretValueRet } from "../utils/secretValue";
 class DBService {

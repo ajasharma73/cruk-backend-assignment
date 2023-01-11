@@ -1,9 +1,9 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { SERVICE_INIT_FAILED } from './constants/errors';
-import { ERROR_PARSE_REQ_BODY, INVALID_EMAIL } from './constants/reqerrors';
-import DBService from './database/DBService';
+import { SERVICE_INIT_FAILED } from './donation-fn-code/constants/errors';
+import { ERROR_PARSE_REQ_BODY, INVALID_EMAIL } from './donation-fn-code/constants/reqerrors';
+import DBService from './donation-fn-code/database/DBService';
 import { getNumberOfDonations } from './models/donations';
-import isValidEmail from './utils/isValidEmail';
+import isValidEmail from './donation-fn-code/utils/isValidEmail';
 
 const initServices = async () => {
     console.log("Initialising services");
