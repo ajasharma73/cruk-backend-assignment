@@ -9,7 +9,7 @@ import {
   SubnetType,
   Vpc
 } from "aws-cdk-lib/aws-ec2";
-import { DockerImageCode } from "aws-cdk-lib/aws-lambda";
+import { Code, DockerImageCode } from "aws-cdk-lib/aws-lambda";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
 import {
   Credentials, DatabaseInstance, DatabaseInstanceEngine,
@@ -17,6 +17,7 @@ import {
 } from "aws-cdk-lib/aws-rds";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
+import { DonationFunctionDeploy } from "./donation-fn-deploy";
 import {
   DATABASE_NAME,
   DATABASE_SECRET_NAME,
@@ -25,7 +26,7 @@ import {
 } from "./env";
 import { CdkResourceInitializer } from "./resource-initialiser";
 
-export class DatabaseStack extends Stack {
+export class RecruitmentStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -54,12 +55,7 @@ export class DatabaseStack extends Stack {
           cidrMask: 24,
           name: "ingress",
           subnetType: SubnetType.PUBLIC,
-        },
-        {
-          cidrMask: 28,
-          name: "rds",
-          subnetType: SubnetType.PRIVATE_ISOLATED,
-        },
+        }
       ],
     });
 
@@ -69,14 +65,14 @@ export class DatabaseStack extends Stack {
     });
 
     dbSecurityGroup.addIngressRule(
-      Peer.ipv4(vpc.vpcCidrBlock),
+      Peer.anyIpv4(),
       Port.tcp(port),
       `Allow port ${port} for database access from VPC CIDR block`
     );
 
     const dbInstance = new DatabaseInstance(this, "MysqlRdsInstance", {
       vpc: vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      vpcSubnets: { subnetType: SubnetType.PUBLIC },
       instanceType,
       engine,
       port,
@@ -88,33 +84,31 @@ export class DatabaseStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // masterUserSecret.attach(dbInstance);
-
     const initializer = new CdkResourceInitializer(this, "MyRdsInit", {
       config: {
         credsSecretName,
       },
       fnLogRetention: RetentionDays.FIVE_MONTHS,
-      fnCode: DockerImageCode.fromImageAsset(`${__dirname}/rds-init-fn-code`, {}),
-      fnTimeout: Duration.minutes(2),
-      fnSecurityGroups: [],
-      vpc,
-      subnetsSelection: vpc.selectSubnets({
-        subnetType: SubnetType.PRIVATE_ISOLATED,
-      }),
+      fnCode: DockerImageCode.fromImageAsset(`${__dirname}/../resources/rds-init-fn-code`, {}),
+      fnTimeout: Duration.minutes(2)
     });
 
     // manage resources dependency
     initializer.customResource.node.addDependency(dbInstance);
 
-    // allow the initializer function to connect to the RDS instance
-    dbInstance.connections.allowFrom(initializer.function, Port.tcp(3306));
-
-    // allow initializer function to read RDS instance creds secret
+    // allow initializer and donation function to read RDS instance creds secret
     masterUserSecret.grantRead(initializer.function);
 
+    // initialize the donation function here
+    const lambdaDeploy = new DonationFunctionDeploy(this, "DonationFunctionDeploy", {
+      fnLogRetention: RetentionDays.FIVE_MONTHS,
+      fnCode: Code.fromAsset(`${__dirname}/../resources/donation-fn-code`),
+      fnTimeout: Duration.minutes(2)
+    });
+    masterUserSecret.grantRead(lambdaDeploy.donationFunction);
+
     new CfnOutput(this, 'DonationFunctionUrl', {
-      value: initializer.donationFunctionUrl.url,
+      value: lambdaDeploy.donationFunctionUrl.url,
     });
 
     /* eslint no-new: 0 */
