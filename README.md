@@ -71,3 +71,11 @@ Do it manually, it's a one-time thing
 
 Absolutely! show us your AWS chops
 
+
+References Used:
+https://github.com/CRUKorg/cruk-backend-assignment  
+https://aws.amazon.com/blogs/infrastructure-and-automation/use-aws-cdk-to-initialize-amazon-rds-instances/
+https://www.youtube.com/watch?v=1YrmUzOjIqE
+https://aws.amazon.com/blogs/aws/announcing-aws-lambda-function-urls-built-in-https-endpoints-for-single-function-microservices/
+https://docs.aws.amazon.com/lambda/latest/dg/typescript-handler.html
+https://docs.aws.amazon.com/cdk/api/v1/docs/aws-lambda-readme.html

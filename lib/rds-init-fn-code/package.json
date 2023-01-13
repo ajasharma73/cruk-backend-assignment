@@ -1,0 +1,8 @@
+{
+    "name": "rds_init",
+    "version": "0.1.0",
+    "dependencies": {
+    "mysql": "^2.18.1"
+    }
+  }
+  
