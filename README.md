@@ -71,6 +71,13 @@ Do it manually, it's a one-time thing
 
 Absolutely! show us your AWS chops
 
+**Overview**
+This application is developed using the AWS CDK, RDS and two lambda functions(in the resources directory). It does not utilise any VPS or authentication. The first lambda function is not internet exposed and is used to initialise the database with test data. The second function is exposed via lambda URLs and uses knex to query the RDS database for the donation count of a particular user.
+
+**Assumptions made**
+* The API expects the user's email to be sent. Since it is client agnostic, the email was chosen to avoid other personal information or database ids being sent.
+* The API was designed to work with only one single user's information. The API can be used to check and trigger a thank you note to a SNS queue as soon as a particular user has made a donation. 
+
 **Online URL for testing**  
 https://ma37o7f26aefsmkfvzhl65zcje0sdlzy.lambda-url.us-east-1.on.aws/  
 Request body is of content-type `application/json`
@@ -97,6 +104,9 @@ cdk deploy
 **Scalability**
 * The app uses a lambda function and AWS should automatically handle scalability.
 * As for RDS, the expectation would be to use as many read replicas as necessary since this function isn't writing back to the database.
+
+**Tools for Monitoring**
+* The metrics of the lambda function, cloud watch logs and log groups as well as building a custom dashboard. 
 
 References Used:  
 https://github.com/CRUKorg/cruk-backend-assignment  
