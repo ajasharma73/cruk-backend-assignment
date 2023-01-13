@@ -1,5 +1,5 @@
 import TABLES from "../constants/tables";
-import DBService from "../database/DBService";
+import DBService from "../database/db-service";
 
 type GetNumberOfDonationsResult = {
     count?: number;
