@@ -1,4 +1,5 @@
 import { Duration, Stack } from 'aws-cdk-lib';
+import * as sns from 'aws-cdk-lib/aws-sns';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -15,11 +16,19 @@ export interface DonationFunctionDeployProps {
 export class DonationFunctionDeploy extends Construct {
   public readonly donationFunction: lambda.Function
   public readonly donationFunctionUrl: lambda.FunctionUrl
+  public readonly donationSNS: sns.Topic
 
   constructor (scope: Construct, id: string, props: DonationFunctionDeployProps) {
     super(scope, id)
 
     const stack = Stack.of(this)
+
+    const topic = new sns.Topic(this, 'Topic', {
+        contentBasedDeduplication: true,
+        displayName: 'Appreciate the Donations',
+        fifo: true,
+        topicName: 'charityDonations',
+      });
 
     this.donationFunction = new lambda.Function(this, "DonationsFunction", {
       functionName: `${id}-DonationsFunction${stack.stackName}`,
@@ -30,12 +39,16 @@ export class DonationFunctionDeploy extends Construct {
       logRetention: props.fnLogRetention,
       environment: {
         DATABASE_NAME,
-        DATABASE_SECRET_NAME
+        DATABASE_SECRET_NAME,
+        TOPIC_ARN: topic.topicArn
       }
     });
 
     this.donationFunctionUrl = this.donationFunction.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
     });
+  
+      topic.grantPublish(this.donationFunction);
+      this.donationSNS = topic;
   }
 }
