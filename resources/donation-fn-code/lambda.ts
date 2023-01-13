@@ -1,9 +1,11 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 import { SERVICE_INIT_FAILED } from './constants/errors';
+import { DONATION_THANK_NOTE } from './constants/messages';
 import { ERROR_PARSE_REQ_BODY, INVALID_EMAIL } from './constants/reqerrors';
-import DBService from './database/DBService';
+import DBService from './database/db-service';
 import { getNumberOfDonations } from './models/donations';
 import isValidEmail from './utils/isValidEmail';
+import publishToSNS from './utils/publishToSNS';
 
 const initServices = async () => {
     console.log("Initialising services");
@@ -15,15 +17,14 @@ const parseRequestBody = (body: string) => {
     try {
         return JSON.parse(body);
     } catch (err) {
-        console.error(ERROR_PARSE_REQ_BODY, err as Error);
-        return {};
+        return null;
     }
 }
 
 const processError = (response:string, code?:number, err?:{message:string})=>{
-    console.error(response, err?.message);
+    console.error(response, JSON.stringify(err));
     return {
-        statusCode: code ?? 400,
+        statusCode: code ?? 500,
         body: JSON.stringify({
             error: response
         }),
@@ -37,6 +38,8 @@ export const main = async (event: APIGatewayEvent, context: Context): Promise<AP
     }
 
     const reqBody = parseRequestBody(event.body as string);
+    if(!reqBody) return processError(ERROR_PARSE_REQ_BODY, 400);
+
     const userEmail = reqBody.email;
 
     if(!userEmail || !isValidEmail(userEmail)) {
@@ -46,12 +49,11 @@ export const main = async (event: APIGatewayEvent, context: Context): Promise<AP
     const donationCount = (await getNumberOfDonations(userEmail))?.count;
     
     if(donationCount && donationCount >= 2){
-        //publish to sns
+        await publishToSNS(DONATION_THANK_NOTE, userEmail, userEmail)
     }
+
     return {
         statusCode: 200,
-        body: JSON.stringify({
-            count:donationCount
-        })
+        body: ''
     };
 };
