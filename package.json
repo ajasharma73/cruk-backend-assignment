@@ -8,6 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "npm run build && jest --runInBand --detectOpenHandles --silent",
+    "prettier-format": "prettier --config .prettierrc **/*.ts --write",
     "cdk": "cdk",
     "deploy": "npm run build && cdk deploy"
   },
@@ -27,6 +28,7 @@
     "aws-lambda": "^1.0.7",
     "knex": "^2.4.0",
     "mysql2": "^3.0.1",
+    "prettier": "^2.8.3",
     "source-map-support": "^0.5.16",
     "ts-jest": "^29.0.5",
     "winston": "^3.8.2",

@@ -3,10 +3,10 @@ import * as cdk from 'aws-cdk-lib';
 import { RecruitmentStack } from '../lib/recruitment-stack';
 
 test('Empty Stack', () => {
-    const app = new cdk.App();
-    const stack = new RecruitmentStack(app, 'MyTestStack');
+  const app = new cdk.App();
+  const stack = new RecruitmentStack(app, 'MyTestStack');
 
-    const template = Template.fromStack(stack);
+  const template = Template.fromStack(stack);
 
-    template.resourceCountIs('AWS::SNS::Topic', 1);
+  template.resourceCountIs('AWS::SNS::Topic', 1);
 });

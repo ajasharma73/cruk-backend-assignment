@@ -17,7 +17,7 @@ export const connectionConfig = {
   database: databaseName
 };
 
-export const config:Knex.Config = {
+export const config: Knex.Config = {
   client: 'mysql2',
   connection: connectionConfig,
   migrations: {

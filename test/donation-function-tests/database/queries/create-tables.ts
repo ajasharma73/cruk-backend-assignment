@@ -1,7 +1,7 @@
 enum TABLES {
-  USERS ="users",
-  DONATIONS = "donations",
-  USER_DONATION_MAP = "user_donation_map"
+  USERS = 'users',
+  DONATIONS = 'donations',
+  USER_DONATION_MAP = 'user_donation_map'
 }
 
 export const CREATE_USERS_TABLE = `

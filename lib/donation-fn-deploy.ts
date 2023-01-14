@@ -7,34 +7,38 @@ import { Construct } from 'constructs';
 import { DATABASE_NAME, DATABASE_SECRET_NAME } from './env';
 
 export interface DonationFunctionDeployProps {
-  fnTimeout: Duration
-  fnLogRetention: RetentionDays
-  fnMemorySize?: number
-  fnCode: lambda.Code
+  fnTimeout: Duration;
+  fnLogRetention: RetentionDays;
+  fnMemorySize?: number;
+  fnCode: lambda.Code;
 }
 
 export class DonationFunctionDeploy extends Construct {
-  public readonly donationFunction: lambda.Function
-  public readonly donationFunctionUrl: lambda.FunctionUrl
-  public readonly donationSNS: sns.Topic
+  public readonly donationFunction: lambda.Function;
+  public readonly donationFunctionUrl: lambda.FunctionUrl;
+  public readonly donationSNS: sns.Topic;
 
-  constructor (scope: Construct, id: string, props: DonationFunctionDeployProps) {
-    super(scope, id)
+  constructor(
+    scope: Construct,
+    id: string,
+    props: DonationFunctionDeployProps
+  ) {
+    super(scope, id);
 
-    const stack = Stack.of(this)
+    const stack = Stack.of(this);
 
     const topic = new sns.Topic(this, 'Topic', {
-        contentBasedDeduplication: true,
-        displayName: 'Appreciate the Donations',
-        fifo: true,
-        topicName: 'charityDonations',
-      });
+      contentBasedDeduplication: true,
+      displayName: 'Appreciate the Donations',
+      fifo: true,
+      topicName: 'charityDonations'
+    });
 
-    this.donationFunction = new lambda.Function(this, "DonationsFunction", {
+    this.donationFunction = new lambda.Function(this, 'DonationsFunction', {
       functionName: `${id}-DonationsFunction${stack.stackName}`,
       runtime: lambda.Runtime.NODEJS_16_X, // So we can use async in my_lambda.js
       code: props.fnCode, // Note 'resources' is the folder we created
-      handler: "lambda.main", //Note lambda is our filename, and main is our function
+      handler: 'lambda.main', //Note lambda is our filename, and main is our function
       timeout: props.fnTimeout,
       logRetention: props.fnLogRetention,
       environment: {
@@ -45,10 +49,10 @@ export class DonationFunctionDeploy extends Construct {
     });
 
     this.donationFunctionUrl = this.donationFunction.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
+      authType: lambda.FunctionUrlAuthType.NONE
     });
-  
-      topic.grantPublish(this.donationFunction);
-      this.donationSNS = topic;
+
+    topic.grantPublish(this.donationFunction);
+    this.donationSNS = topic;
   }
 }

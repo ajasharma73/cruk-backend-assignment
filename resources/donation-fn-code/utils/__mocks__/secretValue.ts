@@ -1,5 +1,5 @@
-import { connectionConfig } from "../../../../test/donation-function-tests/database/knexconfig";
-import { DATABASE_SECRET_NAME } from "../../env";
+import { connectionConfig } from '../../../../test/donation-function-tests/database/knexconfig';
+import { DATABASE_SECRET_NAME } from '../../env';
 
 type GetSecretValueRet = {
   username: string;
@@ -13,10 +13,10 @@ function getSecretValue(secretId: string): Promise<GetSecretValueRet | Error> {
       resolve({
         username: connectionConfig.user,
         password: connectionConfig.password,
-        host: connectionConfig.host,
+        host: connectionConfig.host
       });
     } else {
-      reject(new Error("Secret not found"));
+      reject(new Error('Secret not found'));
     }
   });
 }
