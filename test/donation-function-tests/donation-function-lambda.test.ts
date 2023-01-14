@@ -2,6 +2,7 @@ import { connectionConfig } from "./database/knexconfig";
 import getTestContext from "./utils/getTestContext";
 import getTestEvent from "./utils/getTestEvent";
 import util from "util";
+import { DONATION_THANK_NOTE } from "../../resources/donation-fn-code/constants/messages";
 
 jest.mock("../../resources/donation-fn-code/utils/secretValue");
 
@@ -29,7 +30,6 @@ jest.mock("aws-sdk", () => {
 });
 
 import { main } from "../../resources/donation-fn-code/lambda";
-import { DONATION_THANK_NOTE } from "../../resources/donation-fn-code/constants/messages";
 
 describe("API /v1/app", () => {
   beforeAll(() => {
