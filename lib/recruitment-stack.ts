@@ -1,4 +1,11 @@
-import { CfnOutput, Duration, RemovalPolicy, Stack, StackProps, Token } from "aws-cdk-lib";
+import {
+  CfnOutput,
+  Duration,
+  RemovalPolicy,
+  Stack,
+  StackProps,
+  Token
+} from 'aws-cdk-lib';
 import {
   InstanceClass,
   InstanceSize,
@@ -8,30 +15,32 @@ import {
   SecurityGroup,
   SubnetType,
   Vpc
-} from "aws-cdk-lib/aws-ec2";
-import { Code, DockerImageCode } from "aws-cdk-lib/aws-lambda";
-import { RetentionDays } from "aws-cdk-lib/aws-logs";
+} from 'aws-cdk-lib/aws-ec2';
+import { Code, DockerImageCode } from 'aws-cdk-lib/aws-lambda';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import {
-  Credentials, DatabaseInstance, DatabaseInstanceEngine,
+  Credentials,
+  DatabaseInstance,
+  DatabaseInstanceEngine,
   MysqlEngineVersion
-} from "aws-cdk-lib/aws-rds";
-import { Secret } from "aws-cdk-lib/aws-secretsmanager";
-import { Construct } from "constructs";
-import { DonationFunctionDeploy } from "./donation-fn-deploy";
+} from 'aws-cdk-lib/aws-rds';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Construct } from 'constructs';
+import { DonationFunctionDeploy } from './donation-fn-deploy';
 import {
   DATABASE_NAME,
   DATABASE_SECRET_NAME,
   SECURITY_GROUP,
   VPC_NAME
-} from "./env";
-import { CdkResourceInitializer } from "./resource-initialiser";
+} from './env';
+import { CdkResourceInitializer } from './resource-initialiser';
 
 export class RecruitmentStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const engine = DatabaseInstanceEngine.mysql({
-      version: MysqlEngineVersion.VER_8_0,
+      version: MysqlEngineVersion.VER_8_0
     });
     const instanceType = InstanceType.of(InstanceClass.T3, InstanceSize.MICRO);
     const port = 3306;
@@ -40,28 +49,28 @@ export class RecruitmentStack extends Stack {
 
     const masterUserSecret = new Secret(this, credsSecretName, {
       secretName: credsSecretName,
-      description: "Database master user credentials",
+      description: 'Database master user credentials',
       generateSecretString: {
-        secretStringTemplate: JSON.stringify({ username: "admin" }),
-        generateStringKey: "password",
+        secretStringTemplate: JSON.stringify({ username: 'admin' }),
+        generateStringKey: 'password',
         passwordLength: 32,
-        excludePunctuation: true,
-      },
+        excludePunctuation: true
+      }
     });
 
     const vpc = new Vpc(this, VPC_NAME, {
       subnetConfiguration: [
         {
           cidrMask: 24,
-          name: "ingress",
-          subnetType: SubnetType.PUBLIC,
+          name: 'ingress',
+          subnetType: SubnetType.PUBLIC
         }
-      ],
+      ]
     });
 
     const dbSecurityGroup = new SecurityGroup(this, SECURITY_GROUP, {
       securityGroupName: SECURITY_GROUP,
-      vpc: vpc,
+      vpc: vpc
     });
 
     dbSecurityGroup.addIngressRule(
@@ -70,7 +79,7 @@ export class RecruitmentStack extends Stack {
       `Allow port ${port} for database access from VPC CIDR block`
     );
 
-    const dbInstance = new DatabaseInstance(this, "MysqlRdsInstance", {
+    const dbInstance = new DatabaseInstance(this, 'MysqlRdsInstance', {
       vpc: vpc,
       vpcSubnets: { subnetType: SubnetType.PUBLIC },
       instanceType,
@@ -81,15 +90,18 @@ export class RecruitmentStack extends Stack {
       credentials: Credentials.fromSecret(masterUserSecret),
       backupRetention: Duration.days(7),
       deleteAutomatedBackups: true,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
-    const initializer = new CdkResourceInitializer(this, "MyRdsInit", {
+    const initializer = new CdkResourceInitializer(this, 'MyRdsInit', {
       config: {
-        credsSecretName,
+        credsSecretName
       },
       fnLogRetention: RetentionDays.FIVE_MONTHS,
-      fnCode: DockerImageCode.fromImageAsset(`${__dirname}/../resources/rds-init-fn-code`, {}),
+      fnCode: DockerImageCode.fromImageAsset(
+        `${__dirname}/../resources/rds-init-fn-code`,
+        {}
+      ),
       fnTimeout: Duration.minutes(2)
     });
 
@@ -100,20 +112,24 @@ export class RecruitmentStack extends Stack {
     masterUserSecret.grantRead(initializer.function);
 
     // initialize the donation function here
-    const lambdaDeploy = new DonationFunctionDeploy(this, "DonationFunctionDeploy", {
-      fnLogRetention: RetentionDays.FIVE_MONTHS,
-      fnCode: Code.fromAsset(`${__dirname}/../resources/donation-fn-code`),
-      fnTimeout: Duration.minutes(2)
-    });
+    const lambdaDeploy = new DonationFunctionDeploy(
+      this,
+      'DonationFunctionDeploy',
+      {
+        fnLogRetention: RetentionDays.FIVE_MONTHS,
+        fnCode: Code.fromAsset(`${__dirname}/../resources/donation-fn-code`),
+        fnTimeout: Duration.minutes(2)
+      }
+    );
     masterUserSecret.grantRead(lambdaDeploy.donationFunction);
 
     new CfnOutput(this, 'DonationFunctionUrl', {
-      value: lambdaDeploy.donationFunctionUrl.url,
+      value: lambdaDeploy.donationFunctionUrl.url
     });
 
     /* eslint no-new: 0 */
-    new CfnOutput(this, "RdsInitFnResponse", {
-      value: Token.asString(initializer.response),
+    new CfnOutput(this, 'RdsInitFnResponse', {
+      value: Token.asString(initializer.response)
     });
   }
 }

@@ -1,0 +1,42 @@
+enum TABLES {
+  USERS = 'users',
+  DONATIONS = 'donations',
+  USER_DONATION_MAP = 'user_donation_map'
+}
+
+export const CREATE_USERS_TABLE = `
+CREATE TABLE IF NOT EXISTS ${TABLES.USERS} (
+	id INT auto_increment NOT NULL,
+	email varchar(100) NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	updated_at DATETIME NULL,
+	deleted_at DATETIME NULL,
+	CONSTRAINT users_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci; `;
+
+export const CREATE_DONATIONS_TABLE = `
+CREATE TABLE IF NOT EXISTS ${TABLES.DONATIONS} (
+	id INT auto_increment NOT NULL,
+	donation_amount BIGINT UNSIGNED DEFAULT 0 NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	updated_at DATETIME NULL,
+	deleted_at DATETIME NULL,
+	CONSTRAINT donation_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci; `;
+
+export const CREATE_USER_DONATE_MAP_TABLE = `
+CREATE TABLE IF NOT EXISTS ${TABLES.USER_DONATION_MAP} (
+	user_id INT NOT NULL,
+	donation_id INT NOT NULL,
+	CONSTRAINT user_donation_map_FK FOREIGN KEY (user_id) REFERENCES ${TABLES.USERS}(id),
+	CONSTRAINT user_donation_map_FK_1 FOREIGN KEY (donation_id) REFERENCES ${TABLES.DONATIONS}(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;`;

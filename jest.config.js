@@ -1,6 +1,8 @@
 module.exports = {
   roots: ['<rootDir>/test'],
-  testMatch: ['**/*.test.ts'],
+  testRegex: './.*\\.(test|spec)?\\.(js)$',
+  moduleFileExtensions: ['js', 'json', 'node'],
+  testEnvironment: '<rootDir>/test/donation-function-tests/database/custom-environment.js',
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   }
