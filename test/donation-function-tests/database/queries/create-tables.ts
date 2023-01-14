@@ -34,8 +34,8 @@ export const CREATE_USER_DONATE_MAP_TABLE = `
 CREATE TABLE IF NOT EXISTS ${TABLES.USER_DONATION_MAP} (
 	user_id INT NOT NULL,
 	donation_id INT NOT NULL,
-	CONSTRAINT user_donation_map_FK FOREIGN KEY (user_id) REFERENCES CRUK.users(id),
-	CONSTRAINT user_donation_map_FK_1 FOREIGN KEY (donation_id) REFERENCES CRUK.donations(id)
+	CONSTRAINT user_donation_map_FK FOREIGN KEY (user_id) REFERENCES ${TABLES.USERS}(id),
+	CONSTRAINT user_donation_map_FK_1 FOREIGN KEY (donation_id) REFERENCES ${TABLES.DONATIONS}(id)
 )
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4

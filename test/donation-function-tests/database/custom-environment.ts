@@ -52,7 +52,7 @@ class CustomEnvironment extends NodeEnvironment {
 
   async dropDatabase() {
     return await this._mainConn.raw(
-      `DROP DATABASE \`${
+      `DROP DATABASE IF EXISTS \`${
         (knexConfig.connection as MySqlConnectionConfig).database
       }\`;`
     );
