@@ -1,8 +1,8 @@
 import { Knex } from 'knex';
-import TABLES from '../../../constants/tables';
 import { users } from '../data/users';
 import { donations } from '../data/donations';
 import { userDonationMap } from '../data/user-donation-map';
+import TABLES from '../../../../resources/donation-fn-code/constants/tables';
 
 export async function seed(knex: Knex): Promise<void> {
   await knex(TABLES.USER_DONATION_MAP).del();

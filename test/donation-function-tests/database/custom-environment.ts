@@ -4,8 +4,8 @@ import type {
 } from '@jest/environment';
 import NodeEnvironment from 'jest-environment-node';
 import knex, { Knex } from 'knex';
+import { MySqlConnectionConfig } from '../../../resources/donation-fn-code/types/database.types';
 
-import { MySqlConnectionConfig } from '../../types/database.types';
 import { config as knexConfig } from './knexconfig';
 
 class CustomEnvironment extends NodeEnvironment {
