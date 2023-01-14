@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "npm run build && jest --runInBand",
+    "test": "npm run build && jest --runInBand --detectOpenHandles --silent",
     "cdk": "cdk",
     "deploy": "npm run build && cdk deploy"
   },
