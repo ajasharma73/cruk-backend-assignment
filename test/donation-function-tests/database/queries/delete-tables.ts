@@ -1,4 +1,4 @@
-import TABLES from "../../../constants/tables";
+import TABLES from "../../../../resources/donation-fn-code/constants/tables";
 
 export const DELETE_USERS_TABLE = `
 DROP TABLE IF EXISTS ${TABLES.USERS};`;
