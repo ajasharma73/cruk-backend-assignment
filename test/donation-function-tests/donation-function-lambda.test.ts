@@ -1,6 +1,7 @@
 import { connectionConfig } from "./database/knexconfig";
 import getTestContext from "./utils/getTestContext";
 import getTestEvent from "./utils/getTestEvent";
+import util from "util";
 
 jest.mock("../../resources/donation-fn-code/utils/secretValue");
 
@@ -12,10 +13,11 @@ jest.mock("aws-sdk", () => {
   const mSNS = {
     publish: jest
       .fn()
-      .mockImplementation(({ MessageGroupId }, cb) => {
+      .mockImplementation(({ Message, MessageGroupId }, cb) => { 
         if (
           DONATIONS_USER[MessageGroupId]
         ) {
+            expect(Message).toBe(util.format(DONATION_THANK_NOTE,DONATIONS_USER[MessageGroupId]));
             cb(null,{});
         } else {
             cb(new Error( "Invalid user" ), null);
@@ -27,6 +29,7 @@ jest.mock("aws-sdk", () => {
 });
 
 import { main } from "../../resources/donation-fn-code/lambda";
+import { DONATION_THANK_NOTE } from "../../resources/donation-fn-code/constants/messages";
 
 describe("API /v1/app", () => {
   beforeAll(() => {

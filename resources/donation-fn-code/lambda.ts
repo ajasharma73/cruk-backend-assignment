@@ -6,6 +6,7 @@ import DBService from './database/db-service';
 import { getNumberOfDonations } from './models/donations';
 import isValidEmail from './utils/isValidEmail';
 import publishToSNS from './utils/publishToSNS';
+import util from 'util';
 
 const initServices = async () => {
     console.log("Initialising services");
@@ -50,7 +51,7 @@ export const main = async (event: APIGatewayEvent, context: Context): Promise<AP
     
     if(donationCount && donationCount >= 2){
         try{
-            await publishToSNS(DONATION_THANK_NOTE, userEmail, userEmail);
+            await publishToSNS(util.format(DONATION_THANK_NOTE,donationCount), userEmail, userEmail);
         } catch(err) {
             return processError(ERROR_PUBLISHING_TO_SNS, 500, err as Error);
         }
