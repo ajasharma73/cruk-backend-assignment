@@ -14,13 +14,14 @@ This application is developed using the AWS CDK, RDS and two lambda functions(in
 * The API was designed to work with only one single user's information. The API can be used to check and trigger a thank you note to a SNS queue as soon as a particular user has made a donation. 
 
 **Online URL for testing**  
-https://o5jinrewwjeihfoxy6l4xssghq0ybdeo.lambda-url.us-east-1.on.aws/ 
+https://o5jinrewwjeihfoxy6l4xssghq0ybdeo.lambda-url.us-east-1.on.aws/   
 Request body is of content-type `application/json`
 ```
 {
     "email":"testuser01@gmail.com"
 }
 ```
+The response includes is a success status(200). If the user has made 2 or more donations, a request is sent with a thank you note to the SNS service.
 
 **Deployment Instructions**
 * Clone the repository.
