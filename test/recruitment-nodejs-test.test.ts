@@ -1,13 +1,12 @@
-import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import { RecruitmentStack } from '../lib/recruitment-stack';
 
 test('Empty Stack', () => {
     const app = new cdk.App();
-    // WHEN
     const stack = new RecruitmentStack(app, 'MyTestStack');
-    // THEN
-    expectCDK(stack).to(matchTemplate({
-      "Resources": {}
-    }, MatchStyle.EXACT))
+
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::SNS::Topic', 1);
 });
