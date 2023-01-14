@@ -38,7 +38,7 @@ cdk deploy
 ```
 * After the deploy, the donation function url and results of the RDS initilisation are displayed.
 
-**Testing**
+**Testing**  
 Integration tests were added for the donation lambda function. It uses a knex database fixture with mocked services.
 The tests are run using the command in the root directory.
 ```
