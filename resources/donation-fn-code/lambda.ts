@@ -1,5 +1,5 @@
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { SERVICE_INIT_FAILED } from './constants/errors';
+import { ERROR_PUBLISHING_TO_SNS, SERVICE_INIT_FAILED } from './constants/errors';
 import { DONATION_THANK_NOTE } from './constants/messages';
 import { ERROR_PARSE_REQ_BODY, INVALID_EMAIL } from './constants/reqerrors';
 import DBService from './database/db-service';
@@ -49,7 +49,11 @@ export const main = async (event: APIGatewayEvent, context: Context): Promise<AP
     const donationCount = (await getNumberOfDonations(userEmail))?.count;
     
     if(donationCount && donationCount >= 2){
-        await publishToSNS(DONATION_THANK_NOTE, userEmail, userEmail)
+        try{
+            await publishToSNS(DONATION_THANK_NOTE, userEmail, userEmail);
+        } catch(err) {
+            return processError(ERROR_PUBLISHING_TO_SNS, 500, err as Error);
+        }
     }
 
     return {
