@@ -7,14 +7,14 @@ Build a service in Node.js that can be deployed to AWS which exposes an API and 
 This service should check how many donations a user has made and send them a special thank you message (e.g. via SNS) if they make 2 or more donations. 
 
 **Overview**  
-This application is developed using the AWS CDK, RDS and two lambda functions(in the resources directory). It does not utilise any VPS or authentication. The first lambda function is not internet exposed and is used to initialise the database with test data. The second function is exposed via lambda URLs and uses knex to query the RDS database for the donation count of a particular user.
+This application is developed using the AWS CDK, RDS and two lambda functions(in the resources directory). It does not utilise any VPS or authentication. The first lambda function is not internet exposed and is used to initialise the database with test data. The second function is exposed via a lambda URL and uses knex to query the RDS database for the donation count of a particular user.
 
 **Assumptions made**
 * The API expects the user's email to be sent. Since it is client agnostic, the email was chosen to avoid other personal information or database ids being sent.
 * The API was designed to work with only one single user's information. The API can be used to check and trigger a thank you note to a SNS queue as soon as a particular user has made a donation. 
 
 **Online URL for testing**  
-https://ma37o7f26aefsmkfvzhl65zcje0sdlzy.lambda-url.us-east-1.on.aws/  
+https://o5jinrewwjeihfoxy6l4xssghq0ybdeo.lambda-url.us-east-1.on.aws/ 
 Request body is of content-type `application/json`
 ```
 {
@@ -35,6 +35,14 @@ npm install
 cdk bootstrap
 cdk deploy
 ```
+* After the deploy, the donation function url and results of the RDS initilisation are displayed.
+
+**Testing**
+Integration tests were added for the donation lambda function. It uses a knex database fixture with mocked services.
+The tests are run using the command in the root directory.
+```
+npm run test
+```
 
 **Scalability**
 * The app uses a lambda function and AWS should automatically handle scalability.
@@ -42,6 +50,14 @@ cdk deploy
 
 **Tools for Monitoring**
 * The metrics of the lambda function, cloud watch logs and log groups as well as building a custom dashboard. 
+
+**Database model**
+![Database Model](/docs/dml_model.png)
+
+**Things for improvement**
+* Add in a logger like winston.
+* CDK tests.
+* The monorepo may need to be restructured.
 
 References Used:  
 https://github.com/CRUKorg/cruk-backend-assignment  
