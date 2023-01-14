@@ -21,7 +21,7 @@ Request body is of content-type `application/json`
     "email":"testuser01@gmail.com"
 }
 ```
-The response includes is a success status(200). If the user has made 2 or more donations, a request is sent with a thank you note to the SNS service.
+The success response is just a success status(200) to avoid user enumeration attacks. If the user has made 2 or more donations, a request is sent with a thank you note to the SNS service.
 
 **Deployment Instructions**
 * Clone the repository.
